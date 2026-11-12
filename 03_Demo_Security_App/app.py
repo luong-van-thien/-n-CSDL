@@ -329,3 +329,4 @@ def encrypt_card():
 if __name__ == "__main__":
     print(">>> Ứng dụng Demo Bảo mật TechStore đang khởi chạy tại http://127.0.0.1:5000")
     app.run(host="127.0.0.1", port=5000, debug=True)
+

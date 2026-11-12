@@ -233,3 +233,4 @@ GO
 
 PRINT N'>>> Đã khởi tạo hoàn tất cấu trúc Cơ sở dữ liệu TechStoreDB với đầy đủ các bảng và ràng buộc toàn vẹn!';
 GO
+

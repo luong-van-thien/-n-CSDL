@@ -204,3 +204,4 @@ Nghiên cứu Chương 30 khẳng định an toàn CSDL không đơn thuần là
 2. Lập trình ứng dụng an toàn (sử dụng 100% Prepared Statements triệt tiêu SQL Injection).
 3. Bảo vệ dữ liệu nhạy cảm (Mã hóa đường truyền TLS, mã hóa lưu trữ TDE, băm mật khẩu với Salt).
 4. Phân tách nhiệm vụ và duy trì cơ chế kiểm toán (Audit Trail) liên tục.
+

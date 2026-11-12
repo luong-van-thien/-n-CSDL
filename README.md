@@ -115,3 +115,4 @@ do an co so du lieu/
 2. **ThS. Tuyết Hải (2022)**, *Bài giảng môn học Cơ sở dữ liệu*, Học viện Công nghệ Bưu chính Viễn thông - Cơ sở TP. Hồ Chí Minh.
 3. **Microsoft Learn (2024)**, *SQL Server Security: Row-Level Security, Dynamic Data Masking, TDE*.
 4. **OWASP Foundation (2023)**, *SQL Injection Prevention Cheat Sheet*.
+

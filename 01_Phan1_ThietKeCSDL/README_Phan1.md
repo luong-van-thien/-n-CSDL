@@ -124,3 +124,4 @@ Chuẩn hóa dữ liệu là quá trình phân rã các lược đồ quan hệ 
 - Đạt chuẩn BCNF vì khóa chính lần lượt là `MaKH` và `MaNV`. Thông tin tài khoản, mật khẩu băm, và thuộc tính cá nhân đều phụ thuộc đầy đủ vào khóa chính.
 
 **KẾT LUẬN TỔNG QUAN**: Toàn bộ 10 lược đồ quan hệ trong CSDL TechStore đều đã được thiết kế tối ưu, đạt dạng chuẩn cao nhất là **BCNF**, đảm bảo tính toàn vẹn và hoàn toàn triệt tiêu các nguy cơ dư thừa dữ liệu hay bất thường thao tác.
+

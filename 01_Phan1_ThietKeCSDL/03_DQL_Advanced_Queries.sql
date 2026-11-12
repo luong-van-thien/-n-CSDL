@@ -391,3 +391,4 @@ GO
 
 PRINT N'>>> Đã cài đặt hoàn chỉnh bộ 25+ câu truy vấn DQL, View, Procedure, Function, Trigger cho TechStoreDB!';
 GO
+

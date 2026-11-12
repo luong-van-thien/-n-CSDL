@@ -278,3 +278,4 @@ document.addEventListener('DOMContentLoaded', () => {
     runHashLab();
     runEncryptCard();
 });
+
