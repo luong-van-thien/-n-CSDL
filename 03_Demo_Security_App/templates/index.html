@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore Cyber Security Lab - Đồ án Cơ sở Dữ liệu</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="logo-text">
+                    <h1>TECHSTORE DATABASE SECURITY LAB</h1>
+                    <p>Chương 30: An Toàn và Bảo Mật Cơ Sở Dữ Liệu | Đồ án CSDL PTIT</p>
+                </div>
+            </div>
+            <div class="header-badges">
+                <span class="badge badge-sql"><i class="fa-solid fa-database"></i> SQL Server / SQLite</span>
+                <span class="badge badge-owasp"><i class="fa-solid fa-lock"></i> OWASP Top 10</span>
+                <span class="badge badge-rbac"><i class="fa-solid fa-user-shield"></i> RBAC & DAC</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <nav class="nav-tabs">
+        <div class="nav-container">
+            <button class="tab-btn active" onclick="switchTab('sqli-tab')">
+                <i class="fa-solid fa-bug"></i> 1. SQL Injection Lab
+            </button>
+            <button class="tab-btn" onclick="switchTab('rbac-tab')">
+                <i class="fa-solid fa-users-gear"></i> 2. Phân Quyền Vai Trò (RBAC)
+            </button>
+            <button class="tab-btn" onclick="switchTab('hash-tab')">
+                <i class="fa-solid fa-key"></i> 3. Băm & Mã Hóa Dữ Liệu
+            </button>
+            <button class="tab-btn" onclick="switchTab('tsql-tab')">
+                <i class="fa-solid fa-server"></i> 4. Kịch Bản SQL Server (T-SQL)
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="main-container">
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: SQL INJECTION LAB -->
+        <!-- =============================================================== -->
+        <section id="sqli-tab" class="tab-content active">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-bug"></i> THỰC NGHIỆM TẤN CÔNG & PHÒNG CHỐNG SQL INJECTION (MỤC 30.4)</h2>
+                <p>Khảo sát cơ chế phát sinh lỗ hổng khi ghép chuỗi SQL và giải pháp phòng thủ triệt để bằng Parameterized Queries.</p>
+            </div>
+
+            <div class="grid-2col">
+                <!-- KHỐI 1: FORM ĐĂNG NHẬP (AUTH BYPASS) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-right-to-bracket"></i> Kịch bản 1: Vượt qua xác thực (Authentication Bypass)</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Mode Selector -->
+                        <div class="mode-toggle-box">
+                            <label class="mode-label">Cơ chế xử lý:</label>
+                            <div class="radio-group">
+                                <label class="radio-item text-danger">
+                                    <input type="radio" name="loginMode" value="vulnerable" checked onchange="updateModeUI()">
+                                    <span><strong>Lỗ hổng</strong> (Ghép chuỗi SQL động)</span>
+                                </label>
+                                <label class="radio-item text-success">
+                                    <input type="radio" name="loginMode" value="secure" onchange="updateModeUI()">
+                                    <span><strong>An toàn</strong> (Prepared Statement)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Form Input -->
+                        <div class="form-group">
+                            <label>Tên đăng nhập / Email:</label>
+                            <input type="text" id="loginUsername" class="input-field" value="admin' --" placeholder="Nhập username hoặc payload...">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu:</label>
+                            <input type="text" id="loginPassword" class="input-field" value="batky123" placeholder="Nhập mật khẩu...">
+                        </div>
+
+                        <!-- Quick Payload Buttons -->
+                        <div class="payload-box">
+                            <span class="payload-label"><i class="fa-solid fa-bolt"></i> Thử Payload tấn công mẫu:</span>
+                            <div class="payload-btns">
+                                <button type="button" class="btn-payload" onclick="setLoginPayload('admin\' --', 'random123')">
+                                    admin' --
+                                </button>
+                                <button type="button" class="btn-payload" onclick="setLoginPayload('\' OR \'1\'=\'1\' --', 'anypass')">
+                                    ' OR '1'='1' --
+                                </button>
+                                <button type="button" class="btn-payload" onclick="setLoginPayload('\' OR 1=1 --', '123456')">
+                                    ' OR 1=1 --
+                                </button>
+                                <button type="button" class="btn-payload btn-reset" onclick="setLoginPayload('admin', 'admin123')">
+                                    Admin chuẩn
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="submitLoginDemo()">
+                            <i class="fa-solid fa-play"></i> Thực thi Đăng nhập
+                        </button>
+
+                        <!-- Kết quả Đăng nhập -->
+                        <div id="loginQueryBox" class="query-box">
+                            <div class="query-title">Câu lệnh SQL thực thi ngầm:</div>
+                            <pre><code id="loginQueryCode">SELECT * FROM USERS WHERE username = '...'</code></pre>
+                        </div>
+
+                        <div id="loginResultBox" class="result-box">
+                            <!-- Render bằng JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHỐI 2: TÌM KIẾM SẢN PHẨM & TRÍCH XUẤT DỮ LIỆU (UNION ATTACK) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-magnifying-glass"></i> Kịch bản 2: Trích xuất dữ liệu nhạy cảm (UNION SQLi)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mode-toggle-box">
+                            <label class="mode-label">Cơ chế xử lý:</label>
+                            <div class="radio-group">
+                                <label class="radio-item text-danger">
+                                    <input type="radio" name="searchMode" value="vulnerable" checked>
+                                    <span><strong>Lỗ hổng</strong> (Dynamic SQL)</span>
+                                </label>
+                                <label class="radio-item text-success">
+                                    <input type="radio" name="searchMode" value="secure">
+                                    <span><strong>An toàn</strong> (Prepared Statement)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Từ khóa tìm kiếm sản phẩm:</label>
+                            <input type="text" id="searchKeyword" class="input-field" 
+                                   value="' UNION SELECT id, username, email, role, salary FROM USERS --" 
+                                   placeholder="Nhập tên sản phẩm...">
+                        </div>
+
+                        <div class="payload-box">
+                            <span class="payload-label"><i class="fa-solid fa-bolt"></i> Thử Payload trích xuất CSDL:</span>
+                            <div class="payload-btns">
+                                <button type="button" class="btn-payload" onclick="setSearchPayload('\' UNION SELECT id, username, email, role, salary FROM USERS --')">
+                                    Lộ Bảng USERS & Lương
+                                </button>
+                                <button type="button" class="btn-payload" onclick="setSearchPayload('iPhone')">
+                                    Tìm thông thường ('iPhone')
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="submitSearchDemo()">
+                            <i class="fa-solid fa-search"></i> Thực thi Tìm kiếm
+                        </button>
+
+                        <div id="searchQueryBox" class="query-box">
+                            <div class="query-title">Câu lệnh SQL thực thi ngầm:</div>
+                            <pre><code id="searchQueryCode">SELECT * FROM SAN_PHAM WHERE ten_sp LIKE '%...%'</code></pre>
+                        </div>
+
+                        <div id="searchResultsBox" class="results-table-box">
+                            <!-- Bảng kết quả render bằng JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: RBAC LAB -->
+        <!-- =============================================================== -->
+        <section id="rbac-tab" class="tab-content">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-users-gear"></i> MÔ HÌNH PHÂN QUYỀN DỰA TRÊN VAI TRÒ (RBAC) (MỤC 30.3)</h2>
+                <p>Mô phỏng ma trận quyền truy cập (Access Control Matrix) và chính sách kiểm soát quyền hạn theo chức vụ.</p>
+            </div>
+
+            <!-- RBAC Matrix Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-table"></i> Ma Trận Quyền Truy Cập (Access Control Matrix)</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="rbac-table">
+                            <thead>
+                                <tr>
+                                    <th>Vai trò (Role)</th>
+                                    <th>Xem Sản phẩm</th>
+                                    <th>Chỉnh sửa Sản phẩm</th>
+                                    <th>Xem Đơn hàng</th>
+                                    <th>Xóa Đơn hàng</th>
+                                    <th>Xem Lương Nhân sự</th>
+                                    <th>Quản trị Người dùng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="role-badge role-admin">ADMIN (Quản trị)</span></td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="role-badge role-manager">MANAGER (Quản lý)</span></td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="role-badge role-staff">STAFF (Nhân viên)</span></td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="role-badge role-customer">CUSTOMER (Khách hàng)</span></td>
+                                    <td><i class="fa-solid fa-check text-success"></i> Có</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><span class="text-warning"><i class="fa-solid fa-filter"></i> Chỉ đơn của mình (RLS)</span></td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                    <td><i class="fa-solid fa-xmark text-danger"></i> Không</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RBAC Simulator Form -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-gamepad"></i> Trình Giả Lập Thử Nghiệm Quyền Hạn Thực Tế</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2col">
+                        <div>
+                            <div class="form-group">
+                                <label>Chọn vai trò người dùng kiểm thử:</label>
+                                <select id="rbacRoleSelect" class="input-field">
+                                    <option value="CUSTOMER">Khách hàng (CUSTOMER)</option>
+                                    <option value="STAFF">Nhân viên bán hàng (STAFF)</option>
+                                    <option value="MANAGER">Quản lý cửa hàng (MANAGER)</option>
+                                    <option value="ADMIN">Quản trị viên tối cao (ADMIN)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Chọn hành động muốn thực hiện:</label>
+                                <select id="rbacActionSelect" class="input-field">
+                                    <option value="view_products">Xem danh mục sản phẩm</option>
+                                    <option value="edit_products">Chỉnh sửa thông tin / giá sản phẩm</option>
+                                    <option value="view_orders">Xem danh sách tất cả đơn hàng</option>
+                                    <option value="delete_orders">Xóa đơn hàng của khách</option>
+                                    <option value="view_salaries">Truy vấn bảng lương nhân viên</option>
+                                    <option value="manage_users">Tạo mới / Xóa tài khoản hệ thống</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="testRBACPermission()">
+                                <i class="fa-solid fa-shield-virus"></i> Thử nghiệm phân quyền
+                            </button>
+                        </div>
+                        <div>
+                            <div id="rbacFeedbackBox" class="rbac-feedback-box">
+                                <div class="feedback-placeholder">
+                                    <i class="fa-solid fa-fingerprint fa-3x"></i>
+                                    <p>Vui lòng chọn vai trò và hành động để kiểm thử cơ chế phân quyền.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: HASH & ENCRYPTION LAB -->
+        <!-- =============================================================== -->
+        <section id="hash-tab" class="tab-content">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-key"></i> BĂM MẬT KHẨU & MÃ HÓA CSDL (MỤC 30.7)</h2>
+                <p>Khảo sát tấn công Rainbow Table trên MD5 và giải pháp băm an toàn với SHA-256 + Salt, kèm mã hóa đối xứng AES-256.</p>
+            </div>
+
+            <div class="grid-2col">
+                <!-- KHỐI 1: SO SÁNH BĂM MẬT KHẨU -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-hashtag"></i> 1. Thí nghiệm Băm Mật khẩu & Tấn công Rainbow Table</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Nhập mật khẩu kiểm thử:</label>
+                            <input type="text" id="hashInputPwd" class="input-field" value="123456" oninput="runHashLab()">
+                        </div>
+                        <div class="form-group">
+                            <label>Chuỗi Salt ngẫu nhiên của hệ thống:</label>
+                            <input type="text" id="hashInputSalt" class="input-field" value="techstore_salt_2024" oninput="runHashLab()">
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-danger">
+                                <strong>MD5 (Lỗi thời, cực kỳ nguy hiểm):</strong>
+                                <span id="md5Status" class="status-tag status-danger">Bị bẻ khóa ngay lập tức!</span>
+                            </div>
+                            <div id="md5Output" class="hash-val code-text">e10adc3949ba59abbe56e057f20f883e</div>
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-warning">
+                                <strong>SHA-256 thuần (Chưa thêm Salt - Dễ bị dò từ điển nếu mật khẩu ngắn):</strong>
+                            </div>
+                            <div id="sha256Output" class="hash-val code-text">8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92</div>
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-success">
+                                <strong>SHA-256 + Unique Salt (Chuẩn bảo mật khuyến nghị):</strong>
+                                <span class="status-tag status-safe"><i class="fa-solid fa-shield"></i> An toàn tuyệt đối</span>
+                            </div>
+                            <div id="saltedSha256Output" class="hash-val code-text">...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KHỐI 2: MÃ HÓA ĐỐI XỨNG & MẶT NẠ DỮ LIỆU (DYNAMIC DATA MASKING) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-credit-card"></i> 2. Mã Hóa Thẻ Tín Dụng & Che Dữ Liệu (Data Masking)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Số thẻ tín dụng thanh toán:</label>
+                            <input type="text" id="cardInput" class="input-field" value="4111 2222 3333 4444" oninput="runEncryptCard()">
+                        </div>
+                        <div class="form-group">
+                            <label>Khóa bí mật mã hóa (Secret Key):</label>
+                            <input type="text" id="keyInput" class="input-field" value="TECHSTORE_AES_KEY_2024" oninput="runEncryptCard()">
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-info">
+                                <strong>Mặt nạ hiển thị công khai (Dynamic Data Masking):</strong>
+                            </div>
+                            <div id="maskedCardOutput" class="hash-val code-text">4111 **** **** 4444</div>
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-primary">
+                                <strong>Bản mã hóa lưu trong CSDL (Ciphertext - Base64):</strong>
+                            </div>
+                            <div id="cipherOutput" class="hash-val code-text">...</div>
+                        </div>
+
+                        <div class="hash-result-item">
+                            <div class="hash-name text-success">
+                                <strong>Bản giải mã chính xác (Decrypted Plaintext):</strong>
+                            </div>
+                            <div id="decryptedOutput" class="hash-val code-text">4111 2222 3333 4444</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: SQL SERVER SECURITY T-SQL -->
+        <!-- =============================================================== -->
+        <section id="tsql-tab" class="tab-content">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-server"></i> KỊCH BẢN BẢO MẬT TRÊN MICROSOFT SQL SERVER</h2>
+                <p>Các lệnh T-SQL tiêu chuẩn triển khai kiểm soát quyền truy cập, Row-Level Security (RLS) và Dynamic Data Masking (DDM).</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-code"></i> T-SQL: Triển khai Cấp quyền (GRANT/REVOKE), RLS và Data Masking</h3>
+                </div>
+                <div class="card-body">
+                    <pre><code class="code-block">-- ============================================================================
+-- KỊCH BẢN BẢO MẬT CHUYÊN SÂU TRÊN MICROSOFT SQL SERVER 2022
+-- ============================================================================
+USE TechStoreDB;
+GO
+
+-- 1. TẠO CÁC ROLE TRONG CSDL VÀ PHÂN QUYỀN DAC
+CREATE ROLE Role_NhanVienBanHang;
+CREATE ROLE Role_QuanLyCuaHang;
+
+-- Cấp quyền SELECT trên bảng sản phẩm và khách hàng cho nhân viên bán hàng
+GRANT SELECT ON SAN_PHAM TO Role_NhanVienBanHang;
+GRANT SELECT, INSERT ON DON_HANG TO Role_NhanVienBanHang;
+GRANT SELECT, INSERT ON CHI_TIET_DON_HANG TO Role_NhanVienBanHang;
+
+-- CẤM (DENY) nhân viên bán hàng xem cột Lương của nhân viên
+DENY SELECT ON NHAN_VIEN(LuongCoBan) TO Role_NhanVienBanHang;
+
+-- Quản lý cửa hàng có thêm quyền cập nhật giá bán sản phẩm
+GRANT SELECT, UPDATE(GiaBan, SoLuongTon) ON SAN_PHAM TO Role_QuanLyCuaHang;
+GO
+
+-- 2. TRIỂN KHAI DYNAMIC DATA MASKING (DDM) CHE DỮ LIỆU NHẠY CẢM
+-- Che số điện thoại: Chỉ hiển thị 3 ký tự đầu và 2 ký tự cuối
+ALTER TABLE KHACH_HANG
+ALTER COLUMN SoDienThoai ADD MASKED WITH (FUNCTION = 'partial(3, "XXXXXX", 2)');
+
+-- Che Email theo định dạng chuẩn email: aXXX@gmail.com
+ALTER TABLE KHACH_HANG
+ALTER COLUMN Email ADD MASKED WITH (FUNCTION = 'email()');
+GO
+
+-- 3. TRIỂN KHAI ROW-LEVEL SECURITY (RLS) CÔ LẬP ĐƠN HÀNG CỦA KHÁCH HÀNG
+-- Tạo hàm vị từ kiểm tra danh tính người dùng đang thực thi truy vấn
+CREATE SCHEMA Security;
+GO
+
+CREATE FUNCTION Security.fn_SecurityPredicateKhachHang(@MaKH VARCHAR(20))
+RETURNS TABLE
+WITH SCHEMABINDING
+AS
+RETURN SELECT 1 AS fn_access_result
+WHERE 
+    IS_MEMBER('Role_QuanLyCuaHang') = 1 
+    OR IS_MEMBER('db_owner') = 1
+    OR @MaKH = CAST(SESSION_CONTEXT(N'CurrentUser_MaKH') AS VARCHAR(20));
+GO
+
+-- Áp dụng chính sách bảo mật lọc hàng (Filter Predicate) lên bảng DON_HANG
+CREATE SECURITY POLICY Security.DonHangSecurityPolicy
+ADD FILTER PREDICATE Security.fn_SecurityPredicateKhachHang(MaKH) ON dbo.DON_HANG
+WITH (STATE = ON);
+GO
+                    </code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+        <p>© 2024 Đồ án môn học Cơ sở dữ liệu | Học viện Công nghệ Bưu chính Viễn thông (PTIT HCM)</p>
+        <p>Thành viên nhóm: N24DCCN076 &amp; Nhóm | Giảng viên hướng dẫn: Cô Tuyết Hải</p>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
