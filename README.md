@@ -4,6 +4,7 @@
 > **Khoa Công Nghệ Thông Tin | Bộ môn Hệ Thống Thông Tin**  
 > **Giảng viên hướng dẫn:** ThS. Tuyết Hải  
 > **Học kỳ:** HK1 (2025 - 2026) | **Hạn nộp:** 30/11/2026  
+> **GitHub Repository:** https://github.com/luong-van-thien/-n-CSDL  
 
 ---
 
@@ -103,7 +104,7 @@ do an co so du lieu/
 
 | STT | Họ và Tên | Mã số sinh viên | Vai trò & Nhiệm vụ phân công | Tỷ lệ đóng góp |
 | :---: | :--- | :---: | :--- | :---: |
-| 1 | **Nguyễn Thành Thiện** (Đại diện) | **N24DCCN076** | **Trưởng nhóm**: Khảo sát nghiệp vụ, thiết kế ERD, Schema, chuẩn hóa BCNF, lập trình DDL/DML, tổng hợp báo cáo. | **34%** |
+| 1 | **Lương Văn Thiện** (Đại diện) | **N24DCCN076** | **Trưởng nhóm**: Khảo sát nghiệp vụ, thiết kế ERD, Schema, chuẩn hóa BCNF, lập trình DDL/DML, tổng hợp báo cáo. | **34%** |
 | 2 | **Thành viên nhóm 02** | MSSV 02 | **Thành viên**: Nghiên cứu lý thuyết Chương 30 (DAC, MAC, RBAC, SQLi, Encryption), soạn thảo Slide thuyết trình. | **33%** |
 | 3 | **Thành viên nhóm 03** | MSSV 03 | **Thành viên**: Phát triển ứng dụng Web Demo Flask, kịch bản T-SQL bảo mật trên SQL Server, quản trị kho GitHub. | **33%** |
 
