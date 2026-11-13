@@ -105,8 +105,8 @@ do an co so du lieu/
 | STT | Họ và Tên | Mã số sinh viên | Vai trò & Nhiệm vụ phân công | Tỷ lệ đóng góp |
 | :---: | :--- | :---: | :--- | :---: |
 | 1 | **Lương Văn Thiện** (Đại diện) | **N24DCCN076** | **Trưởng nhóm**: Khảo sát nghiệp vụ, thiết kế ERD, Schema, chuẩn hóa BCNF, lập trình DDL/DML, tổng hợp báo cáo. | **34%** |
-| 2 | **Thành viên nhóm 02** | MSSV 02 | **Thành viên**: Nghiên cứu lý thuyết Chương 30 (DAC, MAC, RBAC, SQLi, Encryption), soạn thảo Slide thuyết trình. | **33%** |
-| 3 | **Thành viên nhóm 03** | MSSV 03 | **Thành viên**: Phát triển ứng dụng Web Demo Flask, kịch bản T-SQL bảo mật trên SQL Server, quản trị kho GitHub. | **33%** |
+| 2 | **Nguyễn Hải Phong** | **N24DCCN059** | **Thành viên**: Nghiên cứu lý thuyết Chương 30 (DAC, MAC, RBAC, SQLi, Encryption), soạn thảo Slide thuyết trình. | **33%** |
+| 3 | **Ngô Đức Thành** | **N24DCCN074** | **Thành viên**: Phát triển ứng dụng Web Demo Flask, kịch bản T-SQL bảo mật trên SQL Server, quản trị kho GitHub. | **33%** |
 
 ---
 
